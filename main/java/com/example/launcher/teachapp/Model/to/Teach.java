@@ -1,13 +1,31 @@
 package com.example.launcher.teachapp.Model.to;
 
 
-public class Teach {
+import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
+public class Teach implements Serializable{
+
+    @SerializedName("id")
     private int id;
+    @SerializedName("name")
     private String name;
+    @SerializedName("haslock")
     private int has_lock;
+    @SerializedName("video_url")
     private String video_url;
+    @SerializedName("text")
     private String text;
+    private boolean seen = false;
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
 
     public int getId() {
         return id;

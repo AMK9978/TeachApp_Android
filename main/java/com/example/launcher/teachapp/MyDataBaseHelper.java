@@ -3,6 +3,7 @@ package com.example.launcher.teachapp;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class MyDataBaseHelper extends SQLiteOpenHelper {
 
@@ -14,6 +15,7 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
     public static final String TEACH_HAS_LOCK = "has_lock";
     public static final String TEACH_VIDEO_URL = "video_url";
     public static final String TEACH_TEXT = "text";
+    public static final String TEACH_SEEN = "teach_seen";
 
     public static final String TABLE_QUIZZES = "quizzes";
     public static final String QUIZ_ID = "id";
@@ -27,18 +29,21 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXIST '"+TABLE_TEACHES+"' ("+TEACH_ID+" INTEGER PRIMARY KEY" +
-                "AUTOINCREMENT ,"+TEACH_NAME+" TEXT ,"+TEACH_HAS_LOCK+" TINYINT(1) DEFAULT 1,"+
-                TEACH_VIDEO_URL+" TEXT ,"+TEACH_TEXT+" TEXT)");
-        db.execSQL("CREATE TABLE IF NOT EXIST '"+TABLE_QUIZZES+"' ("+QUIZ_ID+" INTEGER PRIMARY KEY" +
-                "AUTOINCREMENT ,"+QUIZ_TITLE+" TEXT ,"+QUIZ_ANSWER+" TINYINT(1) DEFAULT 1,"+
+        Log.i("payam","tables were created");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLE_TEACHES+" ("+TEACH_ID+" INTEGER PRIMARY KEY " +
+                "AUTOINCREMENT ,"+TEACH_NAME+" TEXT ,"+TEACH_HAS_LOCK+" TINYINT(1) DEFAULT '1',"+
+                TEACH_VIDEO_URL+" TEXT ,"+TEACH_TEXT+" TEXT , "+TEACH_SEEN+" TINYINT(1) DEFAULT '0')");
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLE_QUIZZES+" ("+QUIZ_ID+" INTEGER PRIMARY KEY " +
+                "AUTOINCREMENT ,"+QUIZ_TITLE+" TEXT ,"+QUIZ_ANSWER+" TINYINT(1) DEFAULT '1',"+
                 QUIZ_TEACH_ID+" INTEGER )");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXIST "+TABLE_TEACHES+"");
-        db.execSQL("DROP TABLE IF EXIST "+TABLE_QUIZZES+"");
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_TEACHES+"");
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_QUIZZES+"");
         onCreate(db);
     }
+
 }

@@ -27,6 +27,7 @@ public class TeachActivity extends AppCompatActivity {
     Button next_teach_btn,quit_teach;
     Teach teach;
     Teach next_teach;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +36,35 @@ public class TeachActivity extends AppCompatActivity {
         quit_teach = findViewById(R.id.btn_quit_teach);
         webView = findViewById(R.id.webView);
         context = findViewById(R.id.teach_context);
-        new MyTask().execute();
+        Bundle bundle = getIntent().getBundleExtra("bundle");
+        position = (int) bundle.get("position");
+
+        next_teach_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (position != MainActivity.teachList.getArrayList().size()-1){
+                    next_teach = MainActivity.teachList.getArrayList().get(position+1);
+                    if (next_teach.getHas_lock() == 1){
+                        //go for quiz
+                        Intent intent = new Intent(TeachActivity.this,QuizActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("teach",teach);
+                        intent.putExtra("bundle_for_quiz",bundle);
+                        startActivity(intent);
+
+                    }else {
+                        //go for next lesson with changing items
+                        teach = next_teach;
+                        position = position+1;
+                        onStart();
+                    }
+                }else{
+                    Intent intent = new Intent(TeachActivity.this,MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
         quit_teach.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,32 +73,22 @@ public class TeachActivity extends AppCompatActivity {
             }
         });
 
-        next_teach_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (position!=MainActivity.teachList.getArrayList().size()-1){
-                    next_teach = MainActivity.teachList.getArrayList().get(position+1);
-                    if (next_teach.getHas_lock() == 1){
-                        //go for quiz
-                    }else {
-                        //go for next lesson with changing fragments
-                    }
-                }
-            }
-        });
 
-        Bundle bundle = getIntent().getBundleExtra("bundle");
-        position = (int) bundle.get("position");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         teach = MainActivity.teachList.getArrayList().get(position);
+
         context.setText(teach.getText());
 
-    }
-
-    public void setVideo(){
-
+        new MyTask().execute();
 
     }
-  class MyTask extends AsyncTask<Void,Void,String>{
+
+  private class MyTask extends AsyncTask<Void,Void,String>{
       @Override
       protected void onPostExecute(String s) {
           try{
@@ -83,7 +102,7 @@ public class TeachActivity extends AppCompatActivity {
 
       @Override
       protected String doInBackground(Void... params) {
-          return API.getData("http://aparat.com/etc/api/video/videohash/UfLu8");
+          return API.getData("http://aparat.com/etc/api/video/videohash/"+teach.getVideo_url());
       }
   }
 

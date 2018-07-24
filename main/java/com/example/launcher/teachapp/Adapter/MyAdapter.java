@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.launcher.teachapp.MainActivity;
+import com.example.launcher.teachapp.Model.da.TeachDA;
 import com.example.launcher.teachapp.Model.to.Teach;
 import com.example.launcher.teachapp.R;
 import com.example.launcher.teachapp.TeachActivity;
@@ -37,17 +39,38 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
-//        holder.imageView.setImageDrawable(android.R.drawable.ic_menu_view);
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         holder.textView.setText(arrayList.get(position).getName());
+        if (arrayList.get(position).getHas_lock() == 1){
+            holder.lock_symbol.setImageResource(android.R.drawable.ic_secure);
+        }else{
+            holder.lock_symbol.setImageDrawable(null);
+        }
+
+        if (arrayList.get(position).isSeen()){
+            holder.seen_symbol.setImageResource(android.R.drawable.ic_menu_view);
+        }else{
+            holder.seen_symbol.setImageDrawable(null);
+        }
+
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (arrayList.get(position).getHas_lock() == 1){
+                    return;
+                }
+                TeachDA teachDA = new TeachDA(context);
+                teachDA.open();
+                teachDA.updateTeach(arrayList.get(position));
+                arrayList.get(position).setSeen(true);
+                setDBChanges(arrayList);
                 Intent intent = new Intent(context, TeachActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("position",position);
                 intent.putExtra("bundle",bundle);
+                teachDA.close();
                 context.startActivity(intent);
+
             }
         });
     }
@@ -59,12 +82,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     class MyViewHolder extends RecyclerView.ViewHolder{
         TextView textView;
-        ImageView imageView;
+        ImageView seen_symbol,lock_symbol;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.txt_teach_name);
-            imageView = itemView.findViewById(R.id.seen_symbol);
+            seen_symbol = itemView.findViewById(R.id.seen_symbol);
+            lock_symbol = itemView.findViewById(R.id.lock_symbol);
         }
+    }
+
+    public void setDBChanges(ArrayList<Teach> arrayList){
+        this.arrayList = arrayList;
+        notifyDataSetChanged();
+
     }
 }

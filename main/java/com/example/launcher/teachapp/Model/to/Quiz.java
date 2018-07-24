@@ -1,10 +1,18 @@
 package com.example.launcher.teachapp.Model.to;
 
 
-public class Quiz {
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
+public class Quiz implements Serializable{
+    @SerializedName("id")
     private int id;
+    @SerializedName("question")
     private String title;
+    @SerializedName("answer")
     private int answer;
+    @SerializedName("teach_id")
     private int teach_id;
 
     public int getId() {

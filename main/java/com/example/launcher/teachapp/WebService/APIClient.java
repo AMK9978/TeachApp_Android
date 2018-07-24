@@ -13,7 +13,7 @@ public class APIClient {
     public static Retrofit getClient(){
         if (retrofit==null){
             retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                    .callbackExecutor(Executors.newSingleThreadExecutor())
+//                    .callbackExecutor(Executors.newSingleThreadExecutor())
                     .addConverterFactory(GsonConverterFactory.create()).build();
         }
         return retrofit;

@@ -1,5 +1,8 @@
 package com.example.launcher.teachapp;
 
+import android.os.Handler;
+import android.os.Message;
+import android.os.UserHandle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +24,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static TeachList teachList;
+    public static TeachList teachList = new TeachList();
     RecyclerView recyclerView;
     MyAdapter myAdapter;
     TeachDA teachDA;
@@ -32,13 +35,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler);
         teachDA = new TeachDA(this);
         teachDA.open();
-        teachList.setArrayList(teachDA.getAllTeaches());
-        if (teachList.getArrayList() == null){
-            getTeaches();
-        }
-        setScreen();
-        InsertIntoDB();
 
+        teachList.setArrayList(teachDA.getAllTeaches());
+        if (teachList.getArrayList().size() == 0){
+            getTeaches();
+            Log.i("payam","need to net");
+        }else {
+            setScreen(teachList.getArrayList());
+        }
 
     }
 
@@ -64,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()){
                     Log.i("payam",Thread.currentThread().getName()+" ,"+ Thread.currentThread().getPriority());
                     teachList = response.body();
+                    setScreen(teachList.getArrayList());
+                    InsertIntoDB();
                 }
             }
             @Override
@@ -75,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setScreen(){
-        myAdapter = new MyAdapter(teachList.getArrayList(),this);
+    private void setScreen(ArrayList<Teach> arrayList){
+        myAdapter = new MyAdapter(arrayList,this);
         recyclerView.setAdapter(myAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
