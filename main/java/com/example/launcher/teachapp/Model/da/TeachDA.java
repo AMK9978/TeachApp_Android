@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class TeachDA {
     SQLiteOpenHelper sqLiteOpenHelper;
     SQLiteDatabase sqLiteDatabase;
+
     public TeachDA(Context context){
         sqLiteOpenHelper = new MyDataBaseHelper(context);
 
@@ -27,6 +28,7 @@ public class TeachDA {
         contentValues.put(MyDataBaseHelper.TEACH_HAS_LOCK, teach.getHas_lock());
         contentValues.put(MyDataBaseHelper.TEACH_TEXT, teach.getText());
         contentValues.put(MyDataBaseHelper.TEACH_VIDEO_URL, teach.getVideo_url());
+        contentValues.put(MyDataBaseHelper.TEACH_SEEN, teach.isSeen());
 
         sqLiteDatabase.insert(MyDataBaseHelper.TABLE_TEACHES,null,contentValues);
     }
@@ -35,13 +37,9 @@ public class TeachDA {
         ContentValues contentValues = new ContentValues();
         contentValues.put(MyDataBaseHelper.TEACH_NAME, teach.getName());
         contentValues.put(MyDataBaseHelper.TEACH_HAS_LOCK, teach.getHas_lock());
-        contentValues.put(MyDataBaseHelper.TEACH_TEXT, teach.getText());
         contentValues.put(MyDataBaseHelper.TEACH_VIDEO_URL, teach.getVideo_url());
+        contentValues.put(MyDataBaseHelper.TEACH_TEXT, teach.getText());
         contentValues.put(MyDataBaseHelper.TEACH_SEEN,teach.isSeen());
-
-        if (sqLiteDatabase == null){
-            Log.i("payam","sqlitedatabase null ast");
-        }
 
         sqLiteDatabase.update(MyDataBaseHelper.TABLE_TEACHES,contentValues,
                 MyDataBaseHelper.TEACH_ID +" ="+ teach.getId(), null);
@@ -55,16 +53,16 @@ public class TeachDA {
             contentValues.put(MyDataBaseHelper.TEACH_HAS_LOCK, arrayList.get(i).getHas_lock());
             contentValues.put(MyDataBaseHelper.TEACH_TEXT, arrayList.get(i).getText());
             contentValues.put(MyDataBaseHelper.TEACH_VIDEO_URL, arrayList.get(i).getVideo_url());
+            contentValues.put(MyDataBaseHelper.TEACH_SEEN, arrayList.get(i).isSeen());
             sqLiteDatabase.insert(MyDataBaseHelper.TABLE_TEACHES,null,contentValues);
         }
-
     }
 
     public ArrayList<Teach> getAllTeaches(){
         ArrayList<Teach> arrayList = new ArrayList<>();
         String[] columns = new String[]{MyDataBaseHelper.TEACH_ID,MyDataBaseHelper.TEACH_NAME,
-                MyDataBaseHelper.TEACH_HAS_LOCK, MyDataBaseHelper.TEACH_VIDEO_URL,MyDataBaseHelper.TEACH_VIDEO_URL
-                ,MyDataBaseHelper.TEACH_SEEN};
+                MyDataBaseHelper.TEACH_HAS_LOCK, MyDataBaseHelper.TEACH_VIDEO_URL
+                , MyDataBaseHelper.TEACH_TEXT , MyDataBaseHelper.TEACH_SEEN};
         Cursor cursor = sqLiteDatabase.query(MyDataBaseHelper.TABLE_TEACHES,columns,null,null,null,null,null);
         if (cursor.moveToFirst()){
             do {
@@ -74,7 +72,7 @@ public class TeachDA {
                 teach.setHas_lock(cursor.getInt(2));
                 teach.setVideo_url(cursor.getString(3));
                 teach.setText(cursor.getString(4));
-                teach.setSeen(false);
+                teach.setSeen(cursor.getInt(5));
                 arrayList.add(teach);
             }while (cursor.moveToNext());
         }

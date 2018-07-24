@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TeachActivity" />
-        <activity android:name=".QuizActivity"></activity>
+        <activity android:name=".QuizActivity" />
     </application>
 
 </manifest>

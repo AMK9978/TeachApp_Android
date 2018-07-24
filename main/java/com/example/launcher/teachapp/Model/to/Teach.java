@@ -11,19 +11,19 @@ public class Teach implements Serializable{
     private int id;
     @SerializedName("name")
     private String name;
-    @SerializedName("haslock")
+    @SerializedName("hasLock")
     private int has_lock;
     @SerializedName("video_url")
     private String video_url;
     @SerializedName("text")
     private String text;
-    private boolean seen = false;
+    private int seen = 0;
 
-    public boolean isSeen() {
+    public int isSeen() {
         return seen;
     }
 
-    public void setSeen(boolean seen) {
+    public void setSeen(int seen) {
         this.seen = seen;
     }
 
